@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Transcript from "./transcript";
+import TranscriptView from "./transcript";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -15,8 +15,8 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter >
     <Routes>  
-      <Route path="transcript" element={<Transcript />}>
-        <Route path=":transcriptId" element={<Transcript />} />
+      <Route path="transcript" element={<TranscriptView />}>
+        <Route path=":transcriptId" element={<TranscriptView />} />
       </Route>
     </Routes>
   </BrowserRouter>
