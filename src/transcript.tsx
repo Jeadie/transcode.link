@@ -31,7 +31,7 @@ class TranscriptView extends React.Component<TranscriptProps, TranscriptState> {
                 if (status == 200) {
                     this.setState({transcriptData: data, chapters: data.chapters ?? [], showDialogue: data.chapters?.map(x => false) ?? []})
                 } else {
-                    console.log("SOmething went wrong", status)
+                    console.log("Something went wrong", status)
                 }
                 console.log(data)
             })

@@ -21,7 +21,7 @@ export default class AssemblyAiClient {
             headers: {authorization: this.key}
           }).then((v: AxiosResponse) => {
             const {data, status} = v
-            ls.set(id, data, [20 * 1000]);
+            ls.set(id, data, [200 * 1000]);
             callback(data, status)
           })
     }
