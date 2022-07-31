@@ -43,12 +43,21 @@ export interface SentimentAnalysis {
     text: string
 }
 
+export interface UtteredWord {
+    start: number
+    end: number
+    text: string
+    confidence: number
+    speaker: string | undefined
+}
+
 export interface Utterance {
     start: number
     end: number
     confidence: number
     speaker: string | undefined
     text: string
+    words: UtteredWord[]
 }
 
 export interface AutoHighlightResult {
@@ -57,6 +66,7 @@ export interface AutoHighlightResult {
     text: string
     timestamps: TimePeriod[]
 }
+
 
 export interface Transcript {
     acoustic_model: string, 
@@ -103,5 +113,34 @@ export interface Transcript {
     webhook_status_code: any | undefined
     webhook_url: any | undefined
     word_boost: any[]
-    words: Utterance[]
+    words: UtteredWord[]
+}
+
+export interface AutoHighlightQuote{
+    text: string,
+    speaker: string,
+    topic: string,
+    rank: number
+}
+
+
+export function GetAutoHighlightQuotes(transcript: Transcript): AutoHighlightQuote[] {
+    /**
+     * Get quotes based off the highlights
+     */
+    if (!transcript.auto_highlights || transcript.auto_highlights_result.status != "success") {
+        return []
+    }
+    return transcript.auto_highlights_result.results.flatMap(it => {
+        return it.timestamps.map(t => {
+            const words = transcript.words.filter(w => w.start >= t.start && w.end <= t.end)
+            console.log(words.map(w => w.text).join(" "))
+            return {
+                text: words.map(w => w.text).join(" "),
+                speaker: words[0].speaker!!,
+                topic: it.text,
+                rank: it.rank
+            }            
+        })
+    })
 }
