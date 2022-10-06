@@ -34,7 +34,7 @@ function ChatMessage(message: ChatMessage) {
     return (
         
         <div className={className}>
-            <span className={`rounded-lg font-bold py-1 px-1 mr-2 inline-block bg-${message.colour}`}>Speaker {message.speakerId}:  </span>
+            <span className={`rounded-lg font-bold py-1 px-1 mr-2 inline-block bg-${message.colour}`}>Speaker {message.speakerId + 1}:  </span>
             <span>{message.text}</span>
         </div>
     )

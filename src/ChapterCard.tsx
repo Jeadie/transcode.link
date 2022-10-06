@@ -11,7 +11,7 @@ export default function ChapterCard(title: string, gist: string, summary: string
     return (
         //  max-w-lg    
         <div>
-            <a className="relative block p-8 overflow-hidden border border-gray-100 rounded-lg" href="" onClick={callback}>
+            <a className="relative bg-white block p-8 my-4 shadow-2xl overflow-hidden border border-gray-100 rounded-lg" href="" onClick={callback}>
             <span className="absolute inset-x-0 bottom-0 h-2  bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
 
             <div className="justify-between sm:flex">

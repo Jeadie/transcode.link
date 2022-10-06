@@ -7,6 +7,9 @@ import AssemblyAiClient from './transcript_api'
 import { AutoHighlightQuote, Chapter, GetAutoHighlightQuotes, Transcript, Utterance } from './model';
 import ChapterCard from './ChapterCard';
 import DialogueView from './DialogueView';
+import ChapterList from './ChapterList';
+import { isString } from 'util';
+import TopicsView from './topics';
 
 interface TranscriptProps {
     params: Readonly<Params<string>> | undefined
@@ -35,14 +38,17 @@ class TranscriptView extends React.Component<TranscriptProps, TranscriptState> {
                     console.log("Something went wrong", status)
                 }
             })
-            // a.get_sentences(this.props.params?.transcriptId, (data: Utterance[], status: number) => {
-            //     if (status == 200) {
-            //         this.setState({...this.state, sentences: data})
-            //     } else {
-            //         console.log("Something went wrong", status)
-            //     }
-            //     console.log(this.state)
-            // })
+            // end: 1528594
+            // start: 1527 888
+            a.get_sentences(this.props.params?.transcriptId, (data: Utterance[], status: number) => {
+                if (status == 200) {
+                    this.setState({...this.state, sentences: data})
+                    console.log("Sentences", data)
+                } else {
+                    console.log("Something went wrong", status)
+                }
+                console.log(this.state)
+            })
             
         }
     }
@@ -93,12 +99,18 @@ class TranscriptView extends React.Component<TranscriptProps, TranscriptState> {
             </div>
         )
 
-        const keyQuotes = !this.state.transcriptData ? null : KeyQuotes(GetAutoHighlightQuotes(this.state.transcriptData))
+        const topics = !this.state.transcriptData ? null : TopicsView(this.state.transcriptData)
+
+        const keyQuotes = !this.state.transcriptData ? null : KeyQuotes(GetAutoHighlightQuotes(this.state.transcriptData, this.state.sentences ?? []))
+
+        const chapterList = ChapterList(this.state.chapters)
 
         return (
             <div>
 
-                <div className="grid grid-cols-5 place-content-center">
+                <div className="grid grid-cols-5 place-content-center bg-slate-100">
+                    {topics}
+                    {chapterList}
                     {keyQuotes}
                     {audioPlayer}
                     {chapters}
@@ -115,17 +127,36 @@ function KeyQuotes(quotes: AutoHighlightQuote[]): React.ReactNode {
         }
         return a.rank > b.rank ? 1 : -1
     })
+    const keyIdeas = GroupBy(quotes, "topic" )
+    const topics: React.ReactNode[] = []
+    keyIdeas.forEach(
+        (quotes: AutoHighlightQuote[], topic: string, _: Map<string, AutoHighlightQuote[]> ) => {topics.push(
+
+        <ul className="py-2">
+            {topic}
+            {quotes.map(
+                q => <li>  -  {q.text}</li>
+            )}
+
+        </ul>
+    )})
     return (
         <ul className='col-start-2 col-span-3'>
-            {quotes.map(
-                quote => (<li>
-                    {quote.text.toString()}
-                </li>)
-            )}
+            {topics}
         </ul>
     )
 }
 
-
-
 export default (props: any) => <TranscriptView {...props} params={useParams()} />;
+
+function GroupBy<T, K extends keyof T>(array: T[], key: K) {
+	let map = new Map<T[K], T[]>();
+	array.forEach(item => {
+		let itemKey = item[key];
+		if (!map.has(itemKey)) {
+			map.set(itemKey, array.filter(i => i[key] === item[key]));
+		}
+	});
+	return map;
+}
+

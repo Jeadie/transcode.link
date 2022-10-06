@@ -124,20 +124,22 @@ export interface AutoHighlightQuote{
 }
 
 
-export function GetAutoHighlightQuotes(transcript: Transcript): AutoHighlightQuote[] {
+export function GetAutoHighlightQuotes(transcript: Transcript, sentences: Utterance[]): AutoHighlightQuote[] {
     /**
      * Get quotes based off the highlights
      */
+    console.log("GetAutoHighlightQuotes")
     if (!transcript.auto_highlights || transcript.auto_highlights_result.status != "success") {
         return []
     }
     return transcript.auto_highlights_result.results.flatMap(it => {
         return it.timestamps.map(t => {
-            const words = transcript.words.filter(w => w.start >= t.start && w.end <= t.end)
-            console.log(words.map(w => w.text).join(" "))
+            const words = sentences.filter(s => s.start <= t.start && s.end >= t.end)
+            const sentence = words.length > 0 ? words[0].text : ""
+            console.log(it.text, sentence)
             return {
-                text: words.map(w => w.text).join(" "),
-                speaker: words[0].speaker!!,
+                text: sentence,
+                speaker: words.find((v: Utterance) => v.speaker !== null)?.speaker ?? "", // [0].speaker!!,
                 topic: it.text,
                 rank: it.rank
             }            
